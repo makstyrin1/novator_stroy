@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ service.title|default:"Детали услуги" }} - БетонСтрой{% endblock %}
+
+{% block content %}
+<section class="product-detail">
+    <div class="container">
+        
+        <!-- Хлебные крошки - улучшенная версия -->
+        <nav class="breadcrumbs" aria-label="Навигация" style="display: block; visibility: visible;">
+            <a href="javascript:history.back()">← Назад</a> 
+            <span style="margin: 0 5px;">/</span>
+            <span>{{ service.title|default:"Детали услуги" }}</span>
+        </nav>
+        
+        <!-- ВЕРТИКАЛЬНЫЙ КОНТЕЙНЕР -->
+        <div class="product-vertical-layout" data-aos="fade-up">
+            
+            <!-- 1. ГЛАВНОЕ МЕДИА -->
+            <div class="main-media-section">
+                <div class="main-image-container">
+                    <!-- Изображение -->
+                    <img id="mainImage"
+                         src=""
+                         alt="{{ service.title|default:'Изображение' }}"
+                         style="display: none;">
+                    
+                    <!-- Видео контейнер -->
+                    <div id="mainVideo" style="display: none;">
+                        <video id="mainVideoPlayer" controls playsinline poster="">
+                            <source src="" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. МИНИАТЮРЫ -->
+            <div class="thumbnails-section">
+                <div class="thumbnails-track">
+                    {% for media in service.media.all %}
+                        {% if media.media_type == 'image' and media.image %}
+                            <!-- Кнопка изображения -->
+                            <button class="thumb-btn {% if forloop.first and service.media.all.0.media_type != 'video' %}active{% endif %}" 
+                                    data-type="image" 
+                                    data-src="{{ media.image.url }}">
+                                <img src="{{ media.image.url }}" alt="{{ media.title|default:service.title }}" loading="lazy">
+                            </button>
+                        {% elif media.media_type == 'video' and media.video %}
+                            <!-- Кнопка видео -->
+                            <button class="thumb-btn {% if forloop.first %}active{% endif %}" 
+                                    data-type="video" 
+                                    data-src="{{ media.video.url }}"
+                                    data-poster="{% if media.image %}{{ media.image.url }}{% else %}{% static 'image/video-placeholder.jpg' %}{% endif %}">
+                                <div class="video-thumb">
+                                    {% if media.image %}
+                                        <img src="{{ media.image.url }}" alt="Превью видео" style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                        <div class="video-thumb-placeholder">
+                                            <i class="fas fa-video"></i>
+                                        </div>
+                                    {% endif %}
+                                    <span class="play-badge">▶</span>
+                                </div>
+                            </button>
+                        {% endif %}
+                    {% empty %}
+                        <!-- Заглушка, если медиа нет -->
+                        <button class="thumb-btn active" data-type="image" data-src="{% static 'image/1.jpg' %}">
+                            <img src="{% static 'image/1.jpg' %}" alt="Фото по умолчанию" loading="lazy">
+                        </button>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 3. КОНТЕНТ -->
+            <div class="content-section">
+                <h1>{{ service.title }}</h1>
+                <div class="product-meta">
+                    <div class="price-block">
+                        <span class="price">{{ service.price|intcomma }}<small>₽</small></span>
+                        <span class="price-unit">{{ service.price_unit|default:"" }}</span>
+                    </div>
+                    <span class="product-category">
+                        <i class="fas fa-tag"></i> {{ service.category.title|default:"Без категории" }}
+                    </span>
+                </div>
+
+                <article class="product-description">
+                    <h3>Описание услуги</h3>
+                    <p>{{ service.description|linebreaks|default:"Описание отсутствует" }}</p>
+                    {% if service.features.all %}
+                        <h3>📋 Что входит в стоимость:</h3>
+                        <ul class="feature-list">
+                            {% for feature in service.features.all %}
+                                <li><i class="fas fa-check-circle"></i> {{ feature.text }}</li>
+                            {% endfor %}                                                                                         
+                        </ul>                                                   
+                    {% endif %}
+                </article>                 
+                <span id="view-count" class="view-count">Просмотров: {{ service.watched }}</span>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}БетонСтрой - Профессиональное бетонирование{% endblock %}</title>
+    
+    <!-- Подключаем стили -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <!-- Подключение фавикона -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'images/site.webmanifest' %}">
+    <!-- Для лучшей совместимости с мобильными устройствами можно добавить еще и PNG версию -->
+    <link rel="apple-touch-icon" href="{% static "image/favicon.png" %}">
+    <!-- AOS анимации -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Шапка сайта -->
+    <header>
+        <div class="container" id="header_padding">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-hard-hat"></i>
+                    <span>НоваторСтрой</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Главная</a></li>
+                        <li><a href="{% url 'service_list' %}">Услуги</a></li>
+                        <li><a href="{% url "about" %}">О компании</a></li>
+                    </ul>
+                </nav>
+                <div class="phone" style="text-align: center;">
+    <span style="color: gray; display: block; margin-bottom: 5px;">Красноярск</span>
+    
+    <!-- Убрали <br> в начале ссылки -->
+    <a href="tel:+79082222664">
+        <i class="fas fa-phone-alt" style="margin-right: 0.4rem;"></i>+7 (908) 222-26-64
+    </a>
+</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    {% block content %}{% endblock %}
+
+    <!-- Подвал сайта -->
+    <footer>
+        <div style="width: 100%;" class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>НоваторСтрой</h3>
+                    <p>Профессиональные бетонные<br>строительные и отделочные работы<br>с гарантией качества</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    
+                    <!-- Телефон: кликабельная ссылка для звонка -->
+                    <p>
+                        <i class="fas fa-phone"></i> 
+                        <a href="tel:+79082222664" style="color: #ffffff">+7 (908) 222-26-64</a>
+                    </p>
+                    
+                    <!-- Почта: кликабельная ссылка для отправки письма -->
+                    <p>
+                        <i class="fas fa-envelope"></i> 
+                        <a href="#" style="color: #ffffff; display: inline-block; padding: 8px 0;" 
+                        onclick="window.copyEmail(event)">
+                            Напишите нам
+                        </a>
+                    </p>
+
+                    <!-- MAX: ссылка на Яндекс.Карты (можно заменить на Google Maps) -->
+                    <p>
+                        <i class="fab fa-telegram"></i>
+                        <a style="color: #ffffff" href="https://max.ru/u/f9LHodD0cOLzPcZhHieaF_sB4Ep5A7DRmSH9AtMzybQtndohKuNzRtyTPNM" target="_blank" rel="noopener noreferrer">
+                            MAX
+                        </a>
+                    </p>
+                </div>
+                </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 НоваторСтрой. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Скрипты -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+    {% if current_category %}
+        {{ current_category.title }} - БетонСтрой
+    {% else %}
+        Услуги по бетонированию - БетонСтрой
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Hero секция -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content" data-aos="fade-up">
+            <h1>Профессиональные общестроительные работы</h1>
+            <p>Качественные бетонные и отделочные работы для вашего строительства</p>
+        </div>
+    </div>
+</section>
+
+<!-- Услуги -->
+<section id="services" class="services">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up" id="sectionTitle">
+            {% if current_category %}
+                {{ current_category.title }}
+            {% else %}
+                Наши услуги
+            {% endif %}
+        </h2>
+        <p class="section-subtitle" data-aos="fade-up" id="sectionSubtitle">
+            {% if current_category %}
+                {{ current_category.title|lower }} от профессионалов
+            {% else %}
+                Профессиональные решения для любых задач
+            {% endif %}
+        </p>
+        
+        <!-- Фильтры -->
+        <div class="filter-section" data-aos="fade-up">
+            <div class="filter-all">
+                <button class="filter-btn {% if not current_category %}active{% endif %}" data-category-id="all" data-category-name="all">
+                    Все услуги
+                </button>
+            </div>
+            <div class="filter-categories">
+                {% for category in categories %}
+                <button class="filter-btn {% if current_category.id == category.id %}active{% endif %}"
+                        data-category-id="{{ category.id }}"
+                        data-category-name="{{ category.title }}">
+                    {{ category.title }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Сетка услуг -->
+        <div class="services-grid" id="servicesGrid">
+            {% for service in services %}
+            <div class="service-card" data-category-id="{{ service.category.id }}" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <div class="service-image">
+                    {% with service.get_main_image as main_image %}
+                        {% if main_image and main_image.image %}
+                            <img src="{{ main_image.image.url }}" alt="{{ service.title }}">
+                        {% else %}
+                            <img src="{% static 'image/1.jpg' %}" alt="{{ service.title }}">
+                        {% endif %}
+                    {% endwith %}
+                    <div class="service-overlay">
+                        <span class="service-category">{{ service.category.title }}</span>
+                    </div>
+                </div>
+                <div class="service-info">
+                    <h3>{{ service.title }}</h3>
+                    <p>{{ service.short_description }}</p>
+                    <div class="service-price">
+                        <span class="price">{{ service.price|intcomma }}<small>₽</small></span>
+                        <span class="unit">{{ service.price_unit|default:"" }}</span>
+                    </div>
+                    <a href="{% url 'service_detail' pk=service.pk %}" class="btn-detail">
+                        Подробнее <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-services">
+                <p>В этой категории пока нет услуг</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Преимущества -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Наши преимущества</h2>
+        <div class="features-grid">
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                <i class="fas fa-trophy"></i>
+                <h3>10 лет опыта</h3>
+                <p>Более 500 реализованных проектов</p>
+            </div>
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                <i class="fas fa-certificate"></i>
+                <h3>Гарантия качества</h3>
+                <p>Гарантия на все виды работ до 5 лет</p>
+            </div>
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                <i class="fas fa-clock"></i>
+                <h3>Соблюдение сроков</h3>
+                <p>Выполняем работы точно в срок</p>
+            </div>
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                <i class="fas fa-ruble-sign"></i>
+                <h3>Лучшие цены</h3>
+                <p>Прямые цены от производителя</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Скрытые данные со всеми услугами -->
+<script id="allServicesData" type="application/json">
+    [
+        {% for service in all_services %}
+        {
+            "id": {{ service.id }},
+            "title": "{{ service.title|escapejs }}",
+            "short_description": "{{ service.short_description|escapejs }}",
+            "price": {{ service.price }},
+            "price_unit": "{{ service.price_unit|default:''|escapejs }}",
+            "category_id": {{ service.category.id }},
+            "category_title": "{{ service.category.title|escapejs }}",
+            "url": "{% url 'service_detail' pk=service.pk %}",
+            "image": "{% with service.get_main_image as main_image %}{% if main_image and main_image.image %}{{ main_image.image.url }}{% else %}{% static 'image/1.jpg' %}{% endif %}{% endwith %}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+</script>
+{% endblock %}

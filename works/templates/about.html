@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}О компании - БетонСтрой{% endblock %}
+
+{% block content %}
+<section class="about-simple" style="padding-top: 120px;">
+    <div class="container">
+        
+        <!-- Заголовок -->
+        <div class="about-header" data-aos="fade-up" style="text-align: center;">
+            <h1>О компании</h1>
+            <p class="lead">НоваторСтрой — надёжный партнёр в мире строительства, бетонных и отделочных работ</p>
+        </div>
+
+        <!-- Основной контент -->
+            <!-- Блок с текстом -->
+            <div class="about-text" style="max-width: 700px; margin: 0 auto; text-align: left;">
+                <p style="text-align: center;">Мы работаем на рынке строительных услуг с 2016 года и специализируемся на работах от фундамента до фишишной отделки.</p>
+                
+                <p style="text-align: center;">Наша команда — это опытные прорабы, рабочие, которые знают своё дело. Мы используем только сертифицированные материалы и современное оборудование, чтобы гарантировать качество и долговечность каждого этапа робот.</p>
+                
+                <h2 style="color: var(--secondary-color); margin-top: 2rem; text-align: center;">Почему выбирают нас:</h2>
+                
+                <!-- НОВАЯ ОБЕРТКА ДЛЯ ЦЕНТРИРОВАНИЯ СПИСКА -->
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <ul class="advantages-list" style="display: inline-block; text-align: left; color: gray; padding-left: 0; list-style: none;">
+                        <li><i class="fas fa-check-circle"></i> Более 10 лет опыта</li>
+                        <li><i class="fas fa-check-circle"></i> Гарантия на проделанные работы</li>
+                        <li><i class="fas fa-check-circle"></i> Прозрачные цены без накруток</li>
+                        <li><i class="fas fa-check-circle"></i> Соблюдение сроков</li>
+                        <li><i class="fas fa-check-circle"></i> Бесплатный выезд специалиста</li>
+                    </ul>
+                </div>
+            </div>
+        <!-- Контакты для связи -->
+        <div class="about-contact" data-aos="fade-up" data-aos-delay="200" style="text-align: center;">
+            <p><strong>Готовы обсудить ваш проект?</strong></p>
+            <p>Свяжитесь с нами для бесплатной консультации</p>
+            <p>
+                <a href="tel:+79082222664" class="phone-link">
+                    <i class="fas fa-phone-alt"></i> +7 (908) 222-26-64
+                </a>
+            </p>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}БетонСтрой - Профессиональное бетонирование в Москве{% endblock %}
+
+{% block content %}
+<!-- Hero секция -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content" data-aos="fade-up">
+            <h1>НоваторСтрой</h1>
+            <p>Надежный партнер в мире строительства, бетонных и отделочных работ</p>
+        </div>
+    </div>
+</section>
+
+<!-- О компании -->
+<section class="about-section">
+    <div class="container">
+        <div class="about-left" data-aos="fade-right">                
+            <div class="stats-container">
+                <div class="stat-box">
+                    <span class="stat-number">10+</span>
+                    <span class="stat-label"><strong>лет опыта</strong></span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">500+</span>
+                    <strong><span class="stat-label">проектов</span></strong>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label"><strong>довольных клиентов</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Ценности/Преимущества -->
+<section class="projects-section-enhanced">
+    <div class="container">
+        <div class="values-grid-enhanced">
+            <div class="value-card-enhanced" data-aos="fade-up" data-aos-delay="100">
+                <h3>Качество</h3>
+                <p>Мы используем только лучшие материалы и современные технологии, гарантируя безупречный результат</p>
+            </div>
+            <div class="value-card-enhanced" data-aos="fade-up" data-aos-delay="200">
+                <h3>Надежность</h3>
+                <p>Выполняем обязательства в срок и несем ответственность за каждый объект</p>
+            </div>
+            <div class="value-card-enhanced" data-aos="fade-up" data-aos-delay="300">
+                <h3>Инновации</h3>
+                <p>Постоянно совершенствуем процессы и внедряем передовые решения</p>
+            </div>
+            <div class="value-card-enhanced" data-aos="fade-up" data-aos-delay="400">
+                <h3>Личный подход</h3>
+                <p>Индивидуальный подход к каждому проекту и полное сопровождение</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="{% url 'service_list' %}" class="btn btn-primary">Наши услуги</a>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section-enhanced">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Часто задаваемые вопросы</h2>
+        <p class="section-subtitle" data-aos="fade-up">Ответы на популярные вопросы наших клиентов</p>
+        
+        <div class="faq-container-enhanced">
+            <div class="faq-item-enhanced" data-aos="fade-up" data-aos-delay="100">
+                <div class="faq-question-enhanced">
+                    <h3><i class="fas fa-clock"></i> Сколько времени занимает заливка фундамента?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer-enhanced">
+                    <p><i class="fas fa-check-circle"></i> Сроки зависят от типа фундамента и его размеров. В среднем, заливка ленточного фундамента для дома занимает 5-7 дней, включая подготовительные работы. Точные сроки рассчитываются индивидуально для каждого проекта.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item-enhanced" data-aos="fade-up" data-aos-delay="200">
+                <div class="faq-question-enhanced">
+                    <h3><i class="fas fa-file-contract"></i> Предоставляете ли вы гарантию?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer-enhanced">
+                    <p><i class="fas fa-check-circle"></i> Да, мы предоставляем гарантию на все виды работ до 5 лет. Гарантийные обязательства официально прописываются в договоре. За все время работы у нас не было ни одного гарантийного случая.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item-enhanced" data-aos="fade-up" data-aos-delay="300">
+                <div class="faq-question-enhanced">
+                    <h3><i class="fas fa-building"></i> Работаете ли вы с юридическими лицами?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer-enhanced">
+                    <p><i class="fas fa-check-circle"></i> Да, мы работаем как с физическими, так и с юридическими лицами. Заключаем официальные договоры.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item-enhanced" data-aos="fade-up" data-aos-delay="400">
+                <div class="faq-question-enhanced">
+                    <h3><i class="fas fa-car"></i> Возможен ли выезд специалиста на объект?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer-enhanced">
+                    <p><i class="fas fa-check-circle"></i> Да, наш специалист может выехать на объект для осмотра и составления точной сметы. Выезд абсолютно бесплатный, время встречи по договоренности.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
