@@ -349,21 +349,76 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // ========================================
-    // FAQ ACCORDION (РАБОТАЕТ КАК НА LOCALHOST)
+    // FAQ ACCORDION (ИСПРАВЛЕНАЯ ВЕРСИЯ ДЛЯ ПРОДАКШЕНА)
     // ========================================
-    const faqItems = document.querySelectorAll('.faq-item, .faq-item-enhanced');
-    faqItems.forEach(item => {
-        const question = item.querySelector('.faq-question, .faq-question-enhanced');
-        if (question) {
-            question.addEventListener('click', () => {
-                faqItems.forEach(otherItem => {
-                    if (otherItem !== item && otherItem.classList.contains('active')) {
-                        otherItem.classList.remove('active');
+    function initFaqAccordion() {
+        // Ищем оба типа FAQ элементов
+        const faqItems = document.querySelectorAll('.faq-item, .faq-item-enhanced');
+        
+        faqItems.forEach(item => {
+            // Ищем заголовок вопроса (поддерживаем оба класса)
+            const question = item.querySelector('.faq-question, .faq-question-enhanced');
+            
+            if (question && !question.hasAttribute('data-faq-initialized')) {
+                question.setAttribute('data-faq-initialized', 'true');
+                question.style.cursor = 'pointer';
+                
+                // Убеждаемся, что ответ изначально скрыт
+                const answer = item.querySelector('.faq-answer, .faq-answer-enhanced');
+                if (answer && !item.classList.contains('active')) {
+                    answer.style.display = 'none';
+                }
+                
+                question.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Закрываем другие открытые вопросы
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item && otherItem.classList.contains('active')) {
+                            otherItem.classList.remove('active');
+                            const otherAnswer = otherItem.querySelector('.faq-answer, .faq-answer-enhanced');
+                            if (otherAnswer) {
+                                otherAnswer.style.display = 'none';
+                            }
+                        }
+                    });
+                    
+                    // Переключаем текущий вопрос
+                    const isActive = item.classList.contains('active');
+                    const currentAnswer = item.querySelector('.faq-answer, .faq-answer-enhanced');
+                    
+                    if (!isActive) {
+                        item.classList.add('active');
+                        if (currentAnswer) {
+                            currentAnswer.style.display = 'block';
+                        }
+                    } else {
+                        item.classList.remove('active');
+                        if (currentAnswer) {
+                            currentAnswer.style.display = 'none';
+                        }
                     }
                 });
-                item.classList.toggle('active');
-            });
-        }
+            }
+        });
+    }
+    
+    // Инициализируем FAQ после загрузки и после возможных AJAX обновлений
+    initFaqAccordion();
+    
+    // Наблюдатель за изменениями в DOM для динамически добавляемых FAQ
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length) {
+                initFaqAccordion();
+            }
+        });
+    });
+    
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
     });
     
     // ========================================
@@ -377,59 +432,129 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ========================================
-    // ФУНКЦИОНАЛ ДЕТАЛИ УСЛУГИ (ГАЛЕРЕЯ)
+    // ФУНКЦИОНАЛ ДЕТАЛИ УСЛУГИ (ИСПРАВЛЕНАЯ ВЕРСИЯ ДЛЯ ПРОДАКШЕНА)
     // ========================================
     initProductDetail();
 });
 
 // ========================================
-// ФУНКЦИИ ДЛЯ СТРАНИЦЫ УСЛУГИ (ГАЛЕРЕЯ)
+// ФУНКЦИИ ДЛЯ СТРАНИЦЫ УСЛУГИ (ИСПРАВЛЕНАЯ ВЕРСИЯ)
 // ========================================
 
 function initProductDetail() {
+    // Ждем полной загрузки DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initProductDetailCore);
+    } else {
+        initProductDetailCore();
+    }
+}
+
+function initProductDetailCore() {
     const mainImage = document.getElementById('mainImage');
     const mainVideoContainer = document.getElementById('mainVideo');
     const videoPlayer = document.getElementById('mainVideoPlayer');
     const thumbBtns = document.querySelectorAll('.thumb-btn');
     
-    if (!mainImage || !mainVideoContainer || !videoPlayer || thumbBtns.length === 0) {
+    // Проверяем наличие всех необходимых элементов
+    if (!thumbBtns.length) {
         return;
     }
-
-    function switchMedia(type, src, poster = null) {
-        if (type === 'image') {
-            mainImage.src = src;
-            mainImage.style.display = 'block';
-            mainImage.style.opacity = '1';
-            
-            mainVideoContainer.style.display = 'none';
-            if (videoPlayer) {
-                videoPlayer.pause();
-                videoPlayer.currentTime = 0;
-                videoPlayer.removeAttribute('src'); 
-                videoPlayer.load();
-            }
-            
-        } else if (type === 'video') {
-            mainImage.style.display = 'none';
-            
-            if (videoPlayer) {
-                if (videoPlayer.src !== window.location.origin + src && videoPlayer.src !== src) {
-                    videoPlayer.src = src;
-                    videoPlayer.load();
-                }
-                
-                if (poster) {
-                    videoPlayer.poster = poster;
+    
+    // Если нет контейнеров для медиа, создаем их
+    let imageElement = mainImage;
+    let videoContainer = mainVideoContainer;
+    let videoElement = videoPlayer;
+    
+    if (!imageElement) {
+        const mainMediaSection = document.querySelector('.main-media-section');
+        if (mainMediaSection) {
+            const mainImageContainer = mainMediaSection.querySelector('.main-image-container');
+            if (mainImageContainer) {
+                const existingImg = mainImageContainer.querySelector('img');
+                if (existingImg) {
+                    imageElement = existingImg;
                 } else {
-                    videoPlayer.removeAttribute('poster');
+                    imageElement = document.createElement('img');
+                    imageElement.id = 'mainImage';
+                    imageElement.style.display = 'none';
+                    mainImageContainer.appendChild(imageElement);
                 }
             }
-            
-            mainVideoContainer.style.display = 'block';
         }
     }
     
+    if (!videoContainer && document.querySelector('.main-image-container')) {
+        videoContainer = document.createElement('div');
+        videoContainer.id = 'mainVideo';
+        videoContainer.style.display = 'none';
+        videoElement = document.createElement('video');
+        videoElement.id = 'mainVideoPlayer';
+        videoElement.controls = true;
+        videoContainer.appendChild(videoElement);
+        document.querySelector('.main-image-container').appendChild(videoContainer);
+    }
+    
+    // Функция переключения медиа
+    function switchMedia(type, src, poster = null) {
+        const img = document.getElementById('mainImage') || imageElement;
+        const videoContainerDiv = document.getElementById('mainVideo') || videoContainer;
+        const video = document.getElementById('mainVideoPlayer') || videoElement;
+        
+        if (type === 'image') {
+            if (img) {
+                // Получаем абсолютный URL для изображения
+                let imageUrl = src;
+                if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('/')) {
+                    imageUrl = '/' + imageUrl;
+                }
+                img.src = imageUrl;
+                img.style.display = 'block';
+                img.style.opacity = '1';
+            }
+            
+            if (videoContainerDiv) {
+                videoContainerDiv.style.display = 'none';
+            }
+            
+            if (video) {
+                video.pause();
+                video.currentTime = 0;
+            }
+            
+        } else if (type === 'video') {
+            if (img) {
+                img.style.display = 'none';
+            }
+            
+            if (video && videoContainerDiv) {
+                // Получаем абсолютный URL для видео
+                let videoUrl = src;
+                if (videoUrl && !videoUrl.startsWith('http') && !videoUrl.startsWith('/')) {
+                    videoUrl = '/' + videoUrl;
+                }
+                
+                if (video.src !== window.location.origin + videoUrl && video.src !== videoUrl) {
+                    video.src = videoUrl;
+                    video.load();
+                }
+                
+                if (poster) {
+                    let posterUrl = poster;
+                    if (posterUrl && !posterUrl.startsWith('http') && !posterUrl.startsWith('/')) {
+                        posterUrl = '/' + posterUrl;
+                    }
+                    video.poster = posterUrl;
+                }
+            }
+            
+            if (videoContainerDiv) {
+                videoContainerDiv.style.display = 'block';
+            }
+        }
+    }
+    
+    // Функция инициализации активного медиа
     function initMainMedia() {
         const activeThumb = document.querySelector('.thumb-btn.active');
         
@@ -442,10 +567,18 @@ function initProductDetail() {
                 switchMedia(type, src, poster);
             }
         } else if (thumbBtns.length > 0) {
-            thumbBtns[0].click();
+            // Активируем первую кнопку
+            thumbBtns[0].classList.add('active');
+            const type = thumbBtns[0].getAttribute('data-type');
+            const src = thumbBtns[0].getAttribute('data-src');
+            const poster = thumbBtns[0].getAttribute('data-poster');
+            if (type && src) {
+                switchMedia(type, src, poster);
+            }
         }
     }
     
+    // Добавляем обработчики на кнопки
     thumbBtns.forEach((btn) => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -463,64 +596,80 @@ function initProductDetail() {
         });
     });
     
+    // Инициализируем
     initMainMedia();
 }
 
 // ========================================
-// ВИДЕО ПРЕВЬЮ
+// ВИДЕО ПРЕВЬЮ (ИСПРАВЛЕНАЯ ВЕРСИЯ ДЛЯ ПРОДАКШЕНА)
 // ========================================
 
-window.addEventListener('load', function() {
-    const videoPlayer = document.getElementById('mainVideoPlayer');
-    if (videoPlayer) {
-        videoPlayer.addEventListener('error', function(e) {
-            console.error('Ошибка загрузки видео:', e);
-        });
-        
-        videoPlayer.addEventListener('loadedmetadata', function() {
-            console.log('Видео готово к воспроизведению');
-        });
-    }
-});
-
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener('DOMContentLoaded', function() {
     const videoThumbs = document.querySelectorAll('.thumb-btn[data-type="video"]');
-
+    
     videoThumbs.forEach(btn => {
-        const imgEl = btn.querySelector('img');
+        // Проверяем, есть ли уже превью
+        const existingImg = btn.querySelector('img');
+        if (existingImg) return;
+        
         const placeholderEl = btn.querySelector('.video-thumb-placeholder');
         const videoUrl = btn.getAttribute('data-src');
-
-        if (placeholderEl && !imgEl) {
+        
+        if (placeholderEl && videoUrl) {
+            // Получаем абсолютный URL
+            let absoluteVideoUrl = videoUrl;
+            if (absoluteVideoUrl && !absoluteVideoUrl.startsWith('http') && !absoluteVideoUrl.startsWith('/')) {
+                absoluteVideoUrl = '/' + absoluteVideoUrl;
+            }
+            
             const v = document.createElement('video');
-            v.src = videoUrl;
+            v.src = absoluteVideoUrl;
             v.crossOrigin = "anonymous";
             v.muted = true;
+            v.preload = 'metadata';
             
             v.onloadeddata = function() {
                 v.currentTime = 1;
             };
-
+            
             v.onseeked = function() {
-                const canvas = document.createElement('canvas');
-                canvas.width = v.videoWidth || 320;
-                canvas.height = v.videoHeight || 180;
-                const ctx = canvas.getContext('2d');
-                
-                ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
-                
-                const imgUrl = canvas.toDataURL('image/jpeg');
-                
-                placeholderEl.remove();
-                
-                const newImg = document.createElement('img');
-                newImg.src = imgUrl;
-                newImg.alt = "Превью видео";
-                newImg.style.width = "100%";
-                newImg.style.height = "100%";
-                newImg.style.objectFit = "cover";
-                
-                btn.querySelector('.video-thumb').appendChild(newImg);
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = v.videoWidth || 320;
+                    canvas.height = v.videoHeight || 180;
+                    const ctx = canvas.getContext('2d');
+                    
+                    if (v.videoWidth && v.videoHeight) {
+                        ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+                        
+                        const imgUrl = canvas.toDataURL('image/jpeg');
+                        
+                        if (placeholderEl && placeholderEl.parentNode) {
+                            placeholderEl.remove();
+                            
+                            const newImg = document.createElement('img');
+                            newImg.src = imgUrl;
+                            newImg.alt = "Превью видео";
+                            newImg.style.width = "100%";
+                            newImg.style.height = "100%";
+                            newImg.style.objectFit = "cover";
+                            
+                            const videoThumbDiv = btn.querySelector('.video-thumb');
+                            if (videoThumbDiv) {
+                                videoThumbDiv.appendChild(newImg);
+                            }
+                        }
+                    }
+                } catch(e) {
+                    console.error('Ошибка создания превью:', e);
+                }
+            };
+            
+            v.onerror = function() {
+                console.error('Ошибка загрузки видео для превью:', absoluteVideoUrl);
+                if (placeholderEl) {
+                    placeholderEl.innerHTML = '<i class="fas fa-video"></i><span>Видео</span>';
+                }
             };
             
             v.load();
