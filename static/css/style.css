@@ -602,15 +602,15 @@ footer .container {
     margin-bottom: 20px;
 }
 
-/* === СТИЛИ ДЛЯ СТРАНИЦЫ ДЕТАЛИ УСЛУГИ (ИСПРАВЛЕННЫЕ - КАРТИНКА ВИДНА ПОЛНОСТЬЮ) === */
+/* === СТИЛИ ДЛЯ СТРАНИЦЫ ДЕТАЛИ УСЛУГИ (ФИКСИРОВАННЫЙ РАЗМЕР) === */
 .main-image-container {
     position: relative;
     width: 100%;
+    height: 400px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e4e8ec 100%);
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    min-height: 400px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1363,7 +1363,7 @@ footer .container {
     }
     
     .main-image-container {
-        min-height: 350px;
+        height: 350px;
         border-radius: 14px;
     }
     
@@ -1482,7 +1482,7 @@ footer .container {
     }
     
     .main-image-container {
-        min-height: 300px;
+        height: 300px;
         border-radius: 12px;
     }
     
@@ -1666,7 +1666,7 @@ footer .container {
     }
     
     .main-image-container {
-        min-height: 250px;
+        height: 250px;
     }
     
     .thumb-btn {
@@ -1724,7 +1724,7 @@ footer .container {
     
     .main-image-container {
         border-radius: 10px;
-        min-height: 220px;
+        height: 220px;
     }
     
     .price-value {
