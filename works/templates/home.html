@@ -113,4 +113,60 @@
         </div>
     </div>
 </section>
+
+<script>
+// FAQ Accordion - работает напрямую
+(function() {
+    function initFaq() {
+        var faqItems = document.querySelectorAll('.faq-item-enhanced');
+        
+        for (var i = 0; i < faqItems.length; i++) {
+            var item = faqItems[i];
+            var question = item.querySelector('.faq-question-enhanced');
+            var answer = item.querySelector('.faq-answer-enhanced');
+            var icon = question ? question.querySelector('.fa-chevron-down') : null;
+            
+            if (!question || !answer) continue;
+            
+            // Скрываем все ответы
+            answer.style.display = 'none';
+            if (icon) icon.style.transform = 'rotate(0deg)';
+            question.style.cursor = 'pointer';
+            
+            // Добавляем обработчик
+            (function(item, answer, icon) {
+                question.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    var isOpen = answer.style.display === 'block';
+                    
+                    // Закрываем все
+                    for (var j = 0; j < faqItems.length; j++) {
+                        var otherItem = faqItems[j];
+                        var otherAnswer = otherItem.querySelector('.faq-answer-enhanced');
+                        var otherIcon = otherItem.querySelector('.faq-question-enhanced .fa-chevron-down');
+                        if (otherAnswer) {
+                            otherAnswer.style.display = 'none';
+                            if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
+                        }
+                    }
+                    
+                    // Открываем текущий
+                    if (!isOpen) {
+                        answer.style.display = 'block';
+                        if (icon) icon.style.transform = 'rotate(180deg)';
+                    }
+                };
+            })(item, answer, icon);
+        }
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initFaq);
+    } else {
+        initFaq();
+    }
+})();
+</script>
 {% endblock %}

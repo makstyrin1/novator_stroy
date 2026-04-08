@@ -8,7 +8,7 @@
 <section class="product-detail">
     <div class="container">
         
-        <!-- Хлебные крошки - улучшенная версия -->
+        <!-- Хлебные крошки -->
         <nav class="breadcrumbs" aria-label="Навигация" style="display: block; visibility: visible;">
             <a href="javascript:history.back()">← Назад</a> 
             <span style="margin: 0 5px;">/</span>
@@ -25,11 +25,11 @@
                     <img id="mainImage"
                          src=""
                          alt="{{ service.title|default:'Изображение' }}"
-                         style="display: none;">
+                         style="display: none; width: 100%; max-height: 500px; object-fit: contain;">
                     
                     <!-- Видео контейнер -->
                     <div id="mainVideo" style="display: none;">
-                        <video id="mainVideoPlayer" controls playsinline poster="">
+                        <video id="mainVideoPlayer" controls playsinline poster="" style="width: 100%; max-height: 500px;">
                             <source src="" type="video/mp4">
                             Ваш браузер не поддерживает видео.
                         </video>
@@ -42,18 +42,16 @@
                 <div class="thumbnails-track">
                     {% for media in service.media.all %}
                         {% if media.media_type == 'image' and media.image %}
-                            <!-- Кнопка изображения -->
-                            <button class="thumb-btn {% if forloop.first and service.media.all.0.media_type != 'video' %}active{% endif %}" 
+                            <button class="thumb-btn" 
                                     data-type="image" 
                                     data-src="{{ media.image.url }}">
                                 <img src="{{ media.image.url }}" alt="{{ media.title|default:service.title }}" loading="lazy">
                             </button>
                         {% elif media.media_type == 'video' and media.video %}
-                            <!-- Кнопка видео -->
-                            <button class="thumb-btn {% if forloop.first %}active{% endif %}" 
+                            <button class="thumb-btn" 
                                     data-type="video" 
                                     data-src="{{ media.video.url }}"
-                                    data-poster="{% if media.image %}{{ media.image.url }}{% else %}{% static 'image/video-placeholder.jpg' %}{% endif %}">
+                                    data-poster="{% if media.image %}{{ media.image.url }}{% endif %}">
                                 <div class="video-thumb">
                                     {% if media.image %}
                                         <img src="{{ media.image.url }}" alt="Превью видео" style="width: 100%; height: 100%; object-fit: cover;">
@@ -67,7 +65,6 @@
                             </button>
                         {% endif %}
                     {% empty %}
-                        <!-- Заглушка, если медиа нет -->
                         <button class="thumb-btn active" data-type="image" data-src="{% static 'image/1.jpg' %}">
                             <img src="{% static 'image/1.jpg' %}" alt="Фото по умолчанию" loading="lazy">
                         </button>
@@ -105,4 +102,98 @@
         </div>
     </div>
 </section>
+
+<script>
+// Функционал для изображений и видео - работает напрямую
+(function() {
+    function initProductGallery() {
+        var thumbBtns = document.querySelectorAll('.thumb-btn');
+        var mainImage = document.getElementById('mainImage');
+        var mainVideoContainer = document.getElementById('mainVideo');
+        var videoPlayer = document.getElementById('mainVideoPlayer');
+        
+        if (!thumbBtns.length) return;
+        
+        function getFullUrl(url) {
+            if (!url) return url;
+            if (url.startsWith('http://') || url.startsWith('https://')) return url;
+            if (url.startsWith('/')) return url;
+            return '/' + url;
+        }
+        
+        function switchMedia(type, src, poster) {
+            if (type === 'image') {
+                if (mainImage) {
+                    mainImage.src = getFullUrl(src);
+                    mainImage.style.display = 'block';
+                }
+                if (mainVideoContainer) {
+                    mainVideoContainer.style.display = 'none';
+                }
+                if (videoPlayer) {
+                    videoPlayer.pause();
+                }
+            } else if (type === 'video') {
+                if (mainImage) {
+                    mainImage.style.display = 'none';
+                }
+                if (videoPlayer && mainVideoContainer) {
+                    var videoSrc = getFullUrl(src);
+                    if (videoPlayer.src !== videoSrc) {
+                        videoPlayer.src = videoSrc;
+                        videoPlayer.load();
+                    }
+                    if (poster) {
+                        videoPlayer.poster = getFullUrl(poster);
+                    }
+                    mainVideoContainer.style.display = 'block';
+                }
+            }
+        }
+        
+        // Активируем первую миниатюру
+        if (thumbBtns.length > 0) {
+            var firstBtn = thumbBtns[0];
+            var firstType = firstBtn.getAttribute('data-type');
+            var firstSrc = firstBtn.getAttribute('data-src');
+            var firstPoster = firstBtn.getAttribute('data-poster');
+            if (firstType && firstSrc) {
+                switchMedia(firstType, firstSrc, firstPoster);
+            }
+            firstBtn.classList.add('active');
+        }
+        
+        // Добавляем обработчики
+        for (var i = 0; i < thumbBtns.length; i++) {
+            var btn = thumbBtns[i];
+            
+            btn.onclick = function(e) {
+                e.preventDefault();
+                
+                // Убираем активный класс у всех
+                for (var j = 0; j < thumbBtns.length; j++) {
+                    thumbBtns[j].classList.remove('active');
+                }
+                
+                // Добавляем активный класс текущей
+                this.classList.add('active');
+                
+                var type = this.getAttribute('data-type');
+                var src = this.getAttribute('data-src');
+                var poster = this.getAttribute('data-poster');
+                
+                if (type && src) {
+                    switchMedia(type, src, poster);
+                }
+            };
+        }
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initProductGallery);
+    } else {
+        initProductGallery();
+    }
+})();
+</script>
 {% endblock %}
