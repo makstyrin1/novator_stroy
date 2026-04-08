@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // ========================================
-    // FAQ ACCORDION
+    // FAQ ACCORDION (РАБОТАЕТ КАК НА LOCALHOST)
     // ========================================
     const faqItems = document.querySelectorAll('.faq-item, .faq-item-enhanced');
     faqItems.forEach(item => {
@@ -377,13 +377,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ========================================
-    // ФУНКЦИОНАЛ ДЕТАЛИ УСЛУГИ
+    // ФУНКЦИОНАЛ ДЕТАЛИ УСЛУГИ (ГАЛЕРЕЯ)
     // ========================================
     initProductDetail();
 });
 
 // ========================================
-// ФУНКЦИИ ДЛЯ СТРАНИЦЫ УСЛУГИ
+// ФУНКЦИИ ДЛЯ СТРАНИЦЫ УСЛУГИ (ГАЛЕРЕЯ)
 // ========================================
 
 function initProductDetail() {
