@@ -602,7 +602,7 @@ footer .container {
     margin-bottom: 20px;
 }
 
-/* === СТИЛИ ДЛЯ СТРАНИЦЫ ДЕТАЛИ УСЛУГИ (ФИКСИРОВАННЫЙ РАЗМЕР - НЕ МЕНЯЕТСЯ) === */
+/* === СТИЛИ ДЛЯ СТРАНИЦЫ ДЕТАЛИ УСЛУГИ (ФИКСИРОВАННЫЙ РАЗМЕР) === */
 .main-image-container {
     position: relative;
     width: 100%;
@@ -617,10 +617,8 @@ footer .container {
 }
 
 #mainImage {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     display: block;
     transition: opacity 0.3s ease;
