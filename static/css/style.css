@@ -602,7 +602,7 @@ footer .container {
     margin-bottom: 20px;
 }
 
-/* === СТИЛИ ДЛЯ СТРАНИЦЫ ДЕТАЛИ УСЛУГИ (ИСПРАВЛЕННЫЕ - КАК БЫЛО) === */
+/* === СТИЛИ ДЛЯ СТРАНИЦЫ ДЕТАЛИ УСЛУГИ (ИСПРАВЛЕННЫЕ - КАРТИНКА ВИДНА ПОЛНОСТЬЮ) === */
 .main-image-container {
     position: relative;
     width: 100%;
@@ -618,23 +618,22 @@ footer .container {
 
 #mainImage {
     width: 100%;
-    height: auto;
-    max-height: 500px;
+    height: 100%;
     object-fit: contain;
     display: block;
     transition: opacity 0.3s ease;
-    margin: 0 auto;
 }
 
 #mainVideo {
     width: 100%;
+    height: 100%;
     display: none;
     background: #000;
 }
 
 #mainVideoPlayer {
     width: 100%;
-    max-height: 500px;
+    height: 100%;
     object-fit: contain;
 }
 
@@ -831,6 +830,8 @@ footer .container {
     padding: 8px 16px;
     font-size: 0.9rem;
     color: #666;
+    background: var(--light-color);
+    border-radius: 20px;
 }
 
 /* === СЕКЦИЯ МИССИИ === */
@@ -1166,7 +1167,6 @@ footer .container {
     transform: rotate(180deg);
 }
 
-/* ВАЖНО: Исправлено - используем display вместо max-height */
 .faq-answer-enhanced {
     padding: 0 2rem;
     background: #fafafa;
@@ -1312,7 +1312,6 @@ footer .container {
 }
 
 /* === ЕДИНЫЕ АДАПТИВНЫЕ СТИЛИ === */
-/* Для всех устройств от 1200px и ниже */
 @media (max-width: 1200px) {
     .values-grid-enhanced {
         grid-template-columns: repeat(2, 1fr);
@@ -1335,7 +1334,6 @@ footer .container {
     }
 }
 
-/* Для планшетов и небольших ноутбуков */
 @media (max-width: 992px) {
     .about-container {
         grid-template-columns: 1fr;
@@ -1369,10 +1367,6 @@ footer .container {
         border-radius: 14px;
     }
     
-    #mainImage {
-        max-height: 400px;
-    }
-    
     .thumb-btn {
         width: 85px;
         height: 64px;
@@ -1391,7 +1385,6 @@ footer .container {
     }
 }
 
-/* Для мобильных устройств (768px и меньше) */
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
@@ -1491,10 +1484,6 @@ footer .container {
     .main-image-container {
         min-height: 300px;
         border-radius: 12px;
-    }
-    
-    #mainImage {
-        max-height: 350px;
     }
     
     .thumb-btn {
@@ -1633,7 +1622,6 @@ footer .container {
     }
 }
 
-/* Для маленьких мобильных устройств (576px и меньше) */
 @media (max-width: 576px) {
     .values-grid-enhanced {
         grid-template-columns: 1fr;
@@ -1681,10 +1669,6 @@ footer .container {
         min-height: 250px;
     }
     
-    #mainImage {
-        max-height: 280px;
-    }
-    
     .thumb-btn {
         width: 70px;
         height: 53px;
@@ -1722,7 +1706,6 @@ footer .container {
     }
 }
 
-/* Для очень маленьких устройств (480px и меньше) */
 @media (max-width: 480px) {
     .product-vertical-layout {
         padding: 0;
@@ -1742,10 +1725,6 @@ footer .container {
     .main-image-container {
         border-radius: 10px;
         min-height: 220px;
-    }
-    
-    #mainImage {
-        max-height: 250px;
     }
     
     .price-value {
