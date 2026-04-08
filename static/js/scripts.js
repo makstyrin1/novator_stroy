@@ -349,74 +349,87 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // ========================================
-    // FAQ ACCORDION (ИСПРАВЛЕНАЯ ВЕРСИЯ ДЛЯ ПРОДАКШЕНА)
+    // FAQ ACCORDION (ИСПРАВЛЕННАЯ ВЕРСИЯ)
     // ========================================
-    function initFaqAccordion() {
-        // Ищем оба типа FAQ элементов
-        const faqItems = document.querySelectorAll('.faq-item, .faq-item-enhanced');
+    function initFaq() {
+        // Ищем все элементы FAQ
+        const faqItems = document.querySelectorAll('.faq-item-enhanced');
         
-        faqItems.forEach(item => {
-            // Ищем заголовок вопроса (поддерживаем оба класса)
-            const question = item.querySelector('.faq-question, .faq-question-enhanced');
+        faqItems.forEach(function(item) {
+            // Находим вопрос и ответ
+            const question = item.querySelector('.faq-question-enhanced');
+            const answer = item.querySelector('.faq-answer-enhanced');
+            const icon = question ? question.querySelector('.fa-chevron-down') : null;
             
-            if (question && !question.hasAttribute('data-faq-initialized')) {
-                question.setAttribute('data-faq-initialized', 'true');
-                question.style.cursor = 'pointer';
+            if (!question || !answer) return;
+            
+            // Скрываем все ответы изначально
+            answer.style.display = 'none';
+            
+            // Убираем старый обработчик, если есть
+            question.removeEventListener('click', window['faqHandler_' + item.id]);
+            
+            // Создаем новый обработчик
+            const handler = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
                 
-                // Убеждаемся, что ответ изначально скрыт
-                const answer = item.querySelector('.faq-answer, .faq-answer-enhanced');
-                if (answer && !item.classList.contains('active')) {
-                    answer.style.display = 'none';
-                }
+                // Проверяем текущее состояние
+                const isOpen = answer.style.display === 'block';
                 
-                question.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // Закрываем другие открытые вопросы
-                    faqItems.forEach(otherItem => {
-                        if (otherItem !== item && otherItem.classList.contains('active')) {
-                            otherItem.classList.remove('active');
-                            const otherAnswer = otherItem.querySelector('.faq-answer, .faq-answer-enhanced');
-                            if (otherAnswer) {
-                                otherAnswer.style.display = 'none';
-                            }
-                        }
-                    });
-                    
-                    // Переключаем текущий вопрос
-                    const isActive = item.classList.contains('active');
-                    const currentAnswer = item.querySelector('.faq-answer, .faq-answer-enhanced');
-                    
-                    if (!isActive) {
-                        item.classList.add('active');
-                        if (currentAnswer) {
-                            currentAnswer.style.display = 'block';
-                        }
-                    } else {
-                        item.classList.remove('active');
-                        if (currentAnswer) {
-                            currentAnswer.style.display = 'none';
+                // Закрываем все другие вопросы
+                faqItems.forEach(function(otherItem) {
+                    const otherAnswer = otherItem.querySelector('.faq-answer-enhanced');
+                    const otherIcon = otherItem.querySelector('.faq-question-enhanced .fa-chevron-down');
+                    if (otherAnswer && otherItem !== item) {
+                        otherAnswer.style.display = 'none';
+                        otherItem.classList.remove('active');
+                        if (otherIcon) {
+                            otherIcon.style.transform = 'rotate(0deg)';
                         }
                     }
                 });
-            }
+                
+                // Переключаем текущий вопрос
+                if (!isOpen) {
+                    answer.style.display = 'block';
+                    item.classList.add('active');
+                    if (icon) {
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                } else {
+                    answer.style.display = 'none';
+                    item.classList.remove('active');
+                    if (icon) {
+                        icon.style.transform = 'rotate(0deg)';
+                    }
+                }
+            };
+            
+            // Сохраняем обработчик
+            window['faqHandler_' + Date.now() + '_' + Math.random()] = handler;
+            question.addEventListener('click', handler);
+            
+            // Добавляем стиль курсора
+            question.style.cursor = 'pointer';
         });
     }
     
-    // Инициализируем FAQ после загрузки и после возможных AJAX обновлений
-    initFaqAccordion();
+    // Инициализируем FAQ
+    initFaq();
     
-    // Наблюдатель за изменениями в DOM для динамически добавляемых FAQ
-    const observer = new MutationObserver(function(mutations) {
+    // Наблюдатель за изменениями для динамически добавляемых FAQ
+    const faqObserver = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             if (mutation.type === 'childList' && mutation.addedNodes.length) {
-                initFaqAccordion();
+                if (document.querySelector('.faq-item-enhanced')) {
+                    initFaq();
+                }
             }
         });
     });
     
-    observer.observe(document.body, {
+    faqObserver.observe(document.body, {
         childList: true,
         subtree: true
     });
@@ -432,249 +445,239 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ========================================
-    // ФУНКЦИОНАЛ ДЕТАЛИ УСЛУГИ (ИСПРАВЛЕНАЯ ВЕРСИЯ ДЛЯ ПРОДАКШЕНА)
+    // ФУНКЦИОНАЛ ДЕТАЛИ УСЛУГИ
     // ========================================
     initProductDetail();
 });
 
 // ========================================
-// ФУНКЦИИ ДЛЯ СТРАНИЦЫ УСЛУГИ (ИСПРАВЛЕНАЯ ВЕРСИЯ)
+// ФУНКЦИИ ДЛЯ СТРАНИЦЫ УСЛУГИ (ИСПРАВЛЕННАЯ)
 // ========================================
 
 function initProductDetail() {
     // Ждем полной загрузки DOM
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initProductDetailCore);
-    } else {
-        initProductDetailCore();
-    }
-}
-
-function initProductDetailCore() {
-    const mainImage = document.getElementById('mainImage');
-    const mainVideoContainer = document.getElementById('mainVideo');
-    const videoPlayer = document.getElementById('mainVideoPlayer');
-    const thumbBtns = document.querySelectorAll('.thumb-btn');
-    
-    // Проверяем наличие всех необходимых элементов
-    if (!thumbBtns.length) {
-        return;
-    }
-    
-    // Если нет контейнеров для медиа, создаем их
-    let imageElement = mainImage;
-    let videoContainer = mainVideoContainer;
-    let videoElement = videoPlayer;
-    
-    if (!imageElement) {
-        const mainMediaSection = document.querySelector('.main-media-section');
-        if (mainMediaSection) {
-            const mainImageContainer = mainMediaSection.querySelector('.main-image-container');
-            if (mainImageContainer) {
-                const existingImg = mainImageContainer.querySelector('img');
-                if (existingImg) {
-                    imageElement = existingImg;
-                } else {
-                    imageElement = document.createElement('img');
-                    imageElement.id = 'mainImage';
+    setTimeout(function() {
+        const mainImage = document.getElementById('mainImage');
+        const mainVideoContainer = document.getElementById('mainVideo');
+        const videoPlayer = document.getElementById('mainVideoPlayer');
+        const thumbBtns = document.querySelectorAll('.thumb-btn');
+        
+        if (!thumbBtns.length) {
+            console.log('Нет миниатюр для инициализации');
+            return;
+        }
+        
+        console.log('Инициализация product detail, найдено миниатюр:', thumbBtns.length);
+        
+        // Создаем контейнеры если их нет
+        let imageElement = mainImage;
+        let videoContainerElement = mainVideoContainer;
+        let videoElement = videoPlayer;
+        
+        // Функция для получения правильного URL
+        function getFullUrl(url) {
+            if (!url) return url;
+            // Если URL уже абсолютный или начинается с http
+            if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//')) {
+                return url;
+            }
+            // Если URL начинается с /, возвращаем как есть
+            if (url.startsWith('/')) {
+                return url;
+            }
+            // Иначе добавляем /
+            return '/' + url;
+        }
+        
+        function switchMedia(type, src, poster) {
+            console.log('Switch media:', type, src);
+            
+            if (type === 'image') {
+                if (imageElement) {
+                    const fullSrc = getFullUrl(src);
+                    imageElement.src = fullSrc;
+                    imageElement.style.display = 'block';
+                }
+                
+                if (videoContainerElement) {
+                    videoContainerElement.style.display = 'none';
+                }
+                
+                if (videoElement) {
+                    videoElement.pause();
+                }
+                
+            } else if (type === 'video') {
+                if (imageElement) {
                     imageElement.style.display = 'none';
-                    mainImageContainer.appendChild(imageElement);
-                }
-            }
-        }
-    }
-    
-    if (!videoContainer && document.querySelector('.main-image-container')) {
-        videoContainer = document.createElement('div');
-        videoContainer.id = 'mainVideo';
-        videoContainer.style.display = 'none';
-        videoElement = document.createElement('video');
-        videoElement.id = 'mainVideoPlayer';
-        videoElement.controls = true;
-        videoContainer.appendChild(videoElement);
-        document.querySelector('.main-image-container').appendChild(videoContainer);
-    }
-    
-    // Функция переключения медиа
-    function switchMedia(type, src, poster = null) {
-        const img = document.getElementById('mainImage') || imageElement;
-        const videoContainerDiv = document.getElementById('mainVideo') || videoContainer;
-        const video = document.getElementById('mainVideoPlayer') || videoElement;
-        
-        if (type === 'image') {
-            if (img) {
-                // Получаем абсолютный URL для изображения
-                let imageUrl = src;
-                if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('/')) {
-                    imageUrl = '/' + imageUrl;
-                }
-                img.src = imageUrl;
-                img.style.display = 'block';
-                img.style.opacity = '1';
-            }
-            
-            if (videoContainerDiv) {
-                videoContainerDiv.style.display = 'none';
-            }
-            
-            if (video) {
-                video.pause();
-                video.currentTime = 0;
-            }
-            
-        } else if (type === 'video') {
-            if (img) {
-                img.style.display = 'none';
-            }
-            
-            if (video && videoContainerDiv) {
-                // Получаем абсолютный URL для видео
-                let videoUrl = src;
-                if (videoUrl && !videoUrl.startsWith('http') && !videoUrl.startsWith('/')) {
-                    videoUrl = '/' + videoUrl;
                 }
                 
-                if (video.src !== window.location.origin + videoUrl && video.src !== videoUrl) {
-                    video.src = videoUrl;
-                    video.load();
-                }
-                
-                if (poster) {
-                    let posterUrl = poster;
-                    if (posterUrl && !posterUrl.startsWith('http') && !posterUrl.startsWith('/')) {
-                        posterUrl = '/' + posterUrl;
+                if (videoElement && videoContainerElement) {
+                    const fullSrc = getFullUrl(src);
+                    
+                    if (videoElement.src !== fullSrc) {
+                        videoElement.src = fullSrc;
+                        videoElement.load();
                     }
-                    video.poster = posterUrl;
+                    
+                    if (poster) {
+                        videoElement.poster = getFullUrl(poster);
+                    }
+                    
+                    videoContainerElement.style.display = 'block';
                 }
             }
-            
-            if (videoContainerDiv) {
-                videoContainerDiv.style.display = 'block';
-            }
         }
-    }
-    
-    // Функция инициализации активного медиа
-    function initMainMedia() {
-        const activeThumb = document.querySelector('.thumb-btn.active');
         
-        if (activeThumb) {
-            const type = activeThumb.getAttribute('data-type');
-            const src = activeThumb.getAttribute('data-src');
-            const poster = activeThumb.getAttribute('data-poster');
+        function initMainMedia() {
+            // Находим активную миниатюру
+            let activeThumb = document.querySelector('.thumb-btn.active');
             
-            if (type && src) {
-                switchMedia(type, src, poster);
+            // Если нет активной, активируем первую
+            if (!activeThumb && thumbBtns.length > 0) {
+                activeThumb = thumbBtns[0];
+                activeThumb.classList.add('active');
             }
-        } else if (thumbBtns.length > 0) {
-            // Активируем первую кнопку
-            thumbBtns[0].classList.add('active');
-            const type = thumbBtns[0].getAttribute('data-type');
-            const src = thumbBtns[0].getAttribute('data-src');
-            const poster = thumbBtns[0].getAttribute('data-poster');
-            if (type && src) {
-                switchMedia(type, src, poster);
+            
+            if (activeThumb) {
+                const type = activeThumb.getAttribute('data-type');
+                const src = activeThumb.getAttribute('data-src');
+                const poster = activeThumb.getAttribute('data-poster');
+                
+                if (type && src) {
+                    switchMedia(type, src, poster);
+                }
             }
         }
-    }
-    
-    // Добавляем обработчики на кнопки
-    thumbBtns.forEach((btn) => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            thumbBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            
-            const type = this.getAttribute('data-type');
-            const src = this.getAttribute('data-src');
-            const poster = this.getAttribute('data-poster');
-            
-            if (type && src) {
-                switchMedia(type, src, poster);
-            }
+        
+        // Добавляем обработчики на миниатюры
+        thumbBtns.forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Убираем активный класс у всех
+                thumbBtns.forEach(function(b) {
+                    b.classList.remove('active');
+                });
+                
+                // Добавляем активный класс текущей
+                this.classList.add('active');
+                
+                const type = this.getAttribute('data-type');
+                const src = this.getAttribute('data-src');
+                const poster = this.getAttribute('data-poster');
+                
+                if (type && src) {
+                    switchMedia(type, src, poster);
+                }
+            });
         });
-    });
-    
-    // Инициализируем
-    initMainMedia();
+        
+        // Инициализируем
+        initMainMedia();
+        
+        // Обработка ошибок видео
+        if (videoElement) {
+            videoElement.addEventListener('error', function(e) {
+                console.error('Ошибка загрузки видео:', e);
+            });
+        }
+        
+    }, 100); // Небольшая задержка для гарантии загрузки DOM
 }
 
 // ========================================
-// ВИДЕО ПРЕВЬЮ (ИСПРАВЛЕНАЯ ВЕРСИЯ ДЛЯ ПРОДАКШЕНА)
+// ВИДЕО ПРЕВЬЮ (ИСПРАВЛЕННАЯ)
 // ========================================
 
-document.addEventListener('DOMContentLoaded', function() {
-    const videoThumbs = document.querySelectorAll('.thumb-btn[data-type="video"]');
-    
-    videoThumbs.forEach(btn => {
-        // Проверяем, есть ли уже превью
-        const existingImg = btn.querySelector('img');
-        if (existingImg) return;
+document.addEventListener("DOMContentLoaded", function() {
+    setTimeout(function() {
+        const videoThumbs = document.querySelectorAll('.thumb-btn[data-type="video"]');
         
-        const placeholderEl = btn.querySelector('.video-thumb-placeholder');
-        const videoUrl = btn.getAttribute('data-src');
-        
-        if (placeholderEl && videoUrl) {
-            // Получаем абсолютный URL
-            let absoluteVideoUrl = videoUrl;
-            if (absoluteVideoUrl && !absoluteVideoUrl.startsWith('http') && !absoluteVideoUrl.startsWith('/')) {
-                absoluteVideoUrl = '/' + absoluteVideoUrl;
+        videoThumbs.forEach(function(btn) {
+            // Проверяем, есть ли уже превью
+            const existingImg = btn.querySelector('img:not(.play-badge)');
+            if (existingImg && existingImg.src && !existingImg.src.includes('placeholder')) {
+                return;
             }
             
-            const v = document.createElement('video');
-            v.src = absoluteVideoUrl;
-            v.crossOrigin = "anonymous";
-            v.muted = true;
-            v.preload = 'metadata';
+            const placeholderEl = btn.querySelector('.video-thumb-placeholder');
+            const videoUrl = btn.getAttribute('data-src');
             
-            v.onloadeddata = function() {
-                v.currentTime = 1;
-            };
-            
-            v.onseeked = function() {
-                try {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = v.videoWidth || 320;
-                    canvas.height = v.videoHeight || 180;
-                    const ctx = canvas.getContext('2d');
-                    
-                    if (v.videoWidth && v.videoHeight) {
-                        ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
-                        
-                        const imgUrl = canvas.toDataURL('image/jpeg');
-                        
-                        if (placeholderEl && placeholderEl.parentNode) {
-                            placeholderEl.remove();
+            if (placeholderEl && videoUrl) {
+                // Получаем абсолютный URL
+                let absoluteVideoUrl = videoUrl;
+                if (absoluteVideoUrl && !absoluteVideoUrl.startsWith('http') && !absoluteVideoUrl.startsWith('https') && !absoluteVideoUrl.startsWith('//')) {
+                    if (!absoluteVideoUrl.startsWith('/')) {
+                        absoluteVideoUrl = '/' + absoluteVideoUrl;
+                    }
+                }
+                
+                const v = document.createElement('video');
+                v.src = absoluteVideoUrl;
+                v.crossOrigin = "anonymous";
+                v.muted = true;
+                v.preload = 'metadata';
+                
+                v.onloadeddata = function() {
+                    v.currentTime = 1;
+                };
+                
+                v.onseeked = function() {
+                    try {
+                        if (v.videoWidth && v.videoHeight) {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = v.videoWidth;
+                            canvas.height = v.videoHeight;
+                            const ctx = canvas.getContext('2d');
                             
-                            const newImg = document.createElement('img');
-                            newImg.src = imgUrl;
-                            newImg.alt = "Превью видео";
-                            newImg.style.width = "100%";
-                            newImg.style.height = "100%";
-                            newImg.style.objectFit = "cover";
+                            ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
                             
-                            const videoThumbDiv = btn.querySelector('.video-thumb');
-                            if (videoThumbDiv) {
-                                videoThumbDiv.appendChild(newImg);
+                            const imgUrl = canvas.toDataURL('image/jpeg');
+                            
+                            if (placeholderEl && placeholderEl.parentNode) {
+                                // Создаем новое изображение
+                                const newImg = document.createElement('img');
+                                newImg.src = imgUrl;
+                                newImg.alt = "Превью видео";
+                                newImg.style.width = "100%";
+                                newImg.style.height = "100%";
+                                newImg.style.objectFit = "cover";
+                                
+                                // Заменяем плейсхолдер
+                                const videoThumbDiv = btn.querySelector('.video-thumb');
+                                if (videoThumbDiv) {
+                                    // Удаляем плейсхолдер
+                                    const oldPlaceholder = videoThumbDiv.querySelector('.video-thumb-placeholder');
+                                    if (oldPlaceholder) {
+                                        oldPlaceholder.remove();
+                                    }
+                                    // Вставляем изображение перед play-badge
+                                    const playBadge = videoThumbDiv.querySelector('.play-badge');
+                                    if (playBadge) {
+                                        videoThumbDiv.insertBefore(newImg, playBadge);
+                                    } else {
+                                        videoThumbDiv.appendChild(newImg);
+                                    }
+                                }
                             }
                         }
+                    } catch(e) {
+                        console.error('Ошибка создания превью:', e);
                     }
-                } catch(e) {
-                    console.error('Ошибка создания превью:', e);
-                }
-            };
-            
-            v.onerror = function() {
-                console.error('Ошибка загрузки видео для превью:', absoluteVideoUrl);
-                if (placeholderEl) {
-                    placeholderEl.innerHTML = '<i class="fas fa-video"></i><span>Видео</span>';
-                }
-            };
-            
-            v.load();
-        }
-    });
+                };
+                
+                v.onerror = function() {
+                    console.error('Ошибка загрузки видео для превью:', absoluteVideoUrl);
+                    if (placeholderEl) {
+                        placeholderEl.innerHTML = '<i class="fas fa-video"></i><span>Видео</span>';
+                    }
+                };
+                
+                v.load();
+            }
+        });
+    }, 100);
 });
 
 // ========================================
