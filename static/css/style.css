@@ -1,3 +1,5 @@
+видишь когда переключаю разные размеры мне нужно чтобы он не менялся
+
 /* === 1. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ === */
 :root {
     --primary-color: #e67e22;
@@ -602,7 +604,7 @@ footer .container {
     margin-bottom: 20px;
 }
 
-/* === СТИЛИ ДЛЯ СТРАНИЦЫ ДЕТАЛИ УСЛУГИ (КАРТИНКА РАСТЯГИВАЕТСЯ, КОНТЕЙНЕР ФИКСИРОВАН) === */
+/* === СТИЛИ ДЛЯ СТРАНИЦЫ ДЕТАЛИ УСЛУГИ (ФИКСИРОВАННЫЙ РАЗМЕР) === */
 .main-image-container {
     position: relative;
     width: 100%;
@@ -611,12 +613,15 @@ footer .container {
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #mainImage {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
     transition: opacity 0.3s ease;
 }
@@ -631,7 +636,7 @@ footer .container {
 #mainVideoPlayer {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 /* Миниатюры */
