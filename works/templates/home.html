@@ -115,7 +115,7 @@
 </section>
 
 <script>
-// FAQ Accordion - работает напрямую
+// FAQ Accordion - простая и надежная версия
 (function() {
     function initFaq() {
         var faqItems = document.querySelectorAll('.faq-item-enhanced');
@@ -124,41 +124,47 @@
             var item = faqItems[i];
             var question = item.querySelector('.faq-question-enhanced');
             var answer = item.querySelector('.faq-answer-enhanced');
-            var icon = question ? question.querySelector('.fa-chevron-down') : null;
             
             if (!question || !answer) continue;
             
-            // Скрываем все ответы
+            // Скрываем ответы изначально
             answer.style.display = 'none';
-            if (icon) icon.style.transform = 'rotate(0deg)';
             question.style.cursor = 'pointer';
             
             // Добавляем обработчик
-            (function(item, answer, icon) {
-                question.onclick = function(e) {
+            question.onclick = (function(currentItem, currentAnswer) {
+                return function(e) {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    var isOpen = answer.style.display === 'block';
+                    // Проверяем, открыт ли текущий ответ
+                    var isOpen = currentAnswer.style.display === 'block';
                     
-                    // Закрываем все
-                    for (var j = 0; j < faqItems.length; j++) {
-                        var otherItem = faqItems[j];
-                        var otherAnswer = otherItem.querySelector('.faq-answer-enhanced');
-                        var otherIcon = otherItem.querySelector('.faq-question-enhanced .fa-chevron-down');
+                    // Закрываем все ответы
+                    var allItems = document.querySelectorAll('.faq-item-enhanced');
+                    for (var j = 0; j < allItems.length; j++) {
+                        var otherAnswer = allItems[j].querySelector('.faq-answer-enhanced');
+                        var otherIcon = allItems[j].querySelector('.faq-question-enhanced .fa-chevron-down');
                         if (otherAnswer) {
                             otherAnswer.style.display = 'none';
-                            if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
                         }
+                        if (otherIcon) {
+                            otherIcon.style.transform = 'rotate(0deg)';
+                        }
+                        allItems[j].classList.remove('active');
                     }
                     
-                    // Открываем текущий
+                    // Открываем текущий, если он был закрыт
                     if (!isOpen) {
-                        answer.style.display = 'block';
-                        if (icon) icon.style.transform = 'rotate(180deg)';
+                        currentAnswer.style.display = 'block';
+                        var currentIcon = currentItem.querySelector('.faq-question-enhanced .fa-chevron-down');
+                        if (currentIcon) {
+                            currentIcon.style.transform = 'rotate(180deg)';
+                        }
+                        currentItem.classList.add('active');
                     }
                 };
-            })(item, answer, icon);
+            })(item, answer);
         }
     }
     
