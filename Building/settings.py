@@ -98,3 +98,24 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+
+# ========================================
+# НАСТРОЙКИ ДЛЯ ЗАГРУЗКИ БОЛЬШИХ ФАЙЛОВ (ВИДЕО)
+# ========================================
+
+# Максимальный размер загружаемого файла - 100MB
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+DATA_UPLOAD_MAX_NUMBER_FILES = 100
+DATA_UPLOAD_MAX_FILE_SIZE = 104857600  # 100MB в байтах
+
+# Максимальный размер файла в памяти (превышающие будут записаны на диск)
+FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
+
+# Обработчики загрузки файлов
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+
+# Таймауты для больших файлов
+DATA_UPLOAD_TIMEOUT = 300  # 5 минут
