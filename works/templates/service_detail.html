@@ -29,7 +29,7 @@
                     
                     <!-- Видео контейнер -->
                     <div id="mainVideo" style="display: none;">
-                        <video id="mainVideoPlayer" controls playsinline poster="" style="width: 100%; height: 100%; object-fit: contain;">
+                        <video id="mainVideoPlayer" controls playsinline poster="">
                             <source src="" type="video/mp4">
                             Ваш браузер не поддерживает видео.
                         </video>
@@ -58,7 +58,6 @@
                                     {% else %}
                                         <div class="video-thumb-placeholder">
                                             <i class="fas fa-video"></i>
-                                            <span>Загрузка...</span>
                                         </div>
                                     {% endif %}
                                     <span class="play-badge">▶</span>
@@ -120,10 +119,7 @@
             var videoThumb = btn.querySelector('.video-thumb');
             var placeholder = btn.querySelector('.video-thumb-placeholder');
             
-            // Проверяем, есть ли уже изображение
-            if (videoThumb.querySelector('img:not(.play-badge)')) return;
-            
-            if (placeholder && videoThumb) {
+            if (placeholder && videoThumb && !btn.querySelector('.video-thumb img')) {
                 var video = document.createElement('video');
                 video.crossOrigin = "anonymous";
                 video.muted = true;
@@ -136,29 +132,23 @@
                 
                 video.onseeked = function() {
                     try {
-                        if (video.videoWidth && video.videoHeight) {
-                            var canvas = document.createElement('canvas');
-                            canvas.width = video.videoWidth;
-                            canvas.height = video.videoHeight;
-                            var ctx = canvas.getContext('2d');
-                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            
-                            var imgUrl = canvas.toDataURL('image/jpeg');
-                            var img = document.createElement('img');
-                            img.src = imgUrl;
-                            img.alt = "Превью видео";
-                            img.style.width = "100%";
-                            img.style.height = "100%";
-                            img.style.objectFit = "cover";
-                            
-                            // Удаляем плейсхолдер и вставляем изображение
-                            if (placeholder) {
-                                placeholder.remove();
-                                videoThumb.insertBefore(img, videoThumb.querySelector('.play-badge'));
-                            }
-                            
-                            // Обновляем data-poster для этой кнопки
-                            btn.setAttribute('data-poster', imgUrl);
+                        var canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth || 320;
+                        canvas.height = video.videoHeight || 180;
+                        var ctx = canvas.getContext('2d');
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        
+                        var imgUrl = canvas.toDataURL('image/jpeg');
+                        var img = document.createElement('img');
+                        img.src = imgUrl;
+                        img.alt = "Превью видео";
+                        img.style.width = "100%";
+                        img.style.height = "100%";
+                        img.style.objectFit = "cover";
+                        
+                        if (placeholder) {
+                            placeholder.remove();
+                            videoThumb.insertBefore(img, videoThumb.querySelector('.play-badge'));
                         }
                     } catch(e) {
                         console.error('Ошибка создания превью:', e);
