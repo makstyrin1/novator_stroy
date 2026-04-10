@@ -602,39 +602,49 @@ footer .container {
     margin-bottom: 20px;
 }
 
-/* === СТИЛИ ДЛЯ СТРАНИЦЫ ДЕТАЛИ УСЛУГИ (ИСПРАВЛЕННЫЕ - КАРТИНКА ВИДНА ПОЛНОСТЬЮ) === */
+/* === Контейнер для главного медиа (изображение/видео) === */
 .main-image-container {
     position: relative;
     width: 100%;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e4e8ec 100%);
+    aspect-ratio: 3 / 2; 
+    
+    background: #f0f0f0; /* Цвет фона, пока грузится медиа */
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    min-height: 400px;
+    
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+/* === Изображение в главном окне (для согласованности) === */
 #mainImage {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover; 
     display: block;
     transition: opacity 0.3s ease;
 }
 
+/* === Контейнер видео === */
 #mainVideo {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     display: none;
     background: #000;
+    z-index: 2;
 }
+
 
 #mainVideoPlayer {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover; 
+    display: block;
 }
 
 /* Миниатюры */

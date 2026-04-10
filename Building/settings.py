@@ -1,7 +1,3 @@
-"""
-Django settings for Building project.
-"""
-
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -10,7 +6,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-for-dev')
-DEBUG = False  # ← ОСТАВЛЯЕМ False для продакшена
+DEBUG = False
 ALLOWED_HOSTS = ['localhost', 'www.novator-stroy.ru', 'novator-stroy.ru']
 
 INSTALLED_APPS = [
