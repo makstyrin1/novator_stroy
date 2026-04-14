@@ -356,7 +356,7 @@ a.filter-btn:hover {
 
 /* === FEATURES SECTION === */
 .features {
-    padding: 80px 0;
+    padding: 25px 0;
     background: white;
 }
 
@@ -1338,9 +1338,9 @@ footer .container {
 
     .features-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(146px, 1fr));
-        gap: 2rem;
-        margin-top: 3rem;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
     }
 }
 
